@@ -1,33 +1,38 @@
 import { useState, useRef } from "react";
 
-// ─── 이미지 데이터 ────────────────────────────────────────────────────────────
-const DOG_IMGS = [
-  "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=600&q=80",
-  "https://images.unsplash.com/photo-1537151608828-ea2b11777ee8?w=600&q=80",
-  "https://images.unsplash.com/photo-1552053831-71594a27632d?w=600&q=80",
-  "https://images.unsplash.com/photo-1518717758536-85ae29035b6d?w=600&q=80",
-];
-const CAT_IMGS = [
-  "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=600&q=80",
-  "https://images.unsplash.com/photo-1495360010541-f48722b34f7d?w=600&q=80",
-  "https://images.unsplash.com/photo-1518791841217-8f162f1912da?w=600&q=80",
-  "https://images.unsplash.com/photo-1573865526739-10659fec78a5?w=600&q=80",
-];
+import dog1 from "../src/assets/photo/dog1.png";
+import dog2 from "../src/assets/photo/dog2.png";
+import dog3 from "../src/assets/photo/dog3.png";
+import cat1 from "../src/assets/photo/cat1.png";
+import cat2 from "../src/assets/photo/cat2.png";
+import cat3 from "../src/assets/photo/cat3.png";
+
+
+// 순서대로 배열로 묶기
+const DOG_IMGS: string[] = [dog1, dog2, dog3];
+const CAT_IMGS: string[] = [cat1, cat2, cat3];
+
+// 인덱스로 안전하게 꺼내는 헬퍼 — 범위 초과 시 순환(%)
+const dog = (i: number): string => DOG_IMGS[i % DOG_IMGS.length];
+const cat = (i: number): string => CAT_IMGS[i % CAT_IMGS.length];
 
 // ─── 샘플 데이터 ──────────────────────────────────────────────────────────────
+// dog(0)~dog(2) → dog (1).png ~ dog (3).png
+// cat(0)~cat(2) → cat (1).png ~ cat (3).png
+// 인덱스가 배열 크기를 넘으면 자동 순환(%)
 const SAMPLE_DATA = {
   sighting: [
-    { id:1, species:"강아지", breed:"믹스견",       location:"수원시 영통구 매탄동", time:"2시간 전",  contact:"010-1234-5678", urgent:true,  status:"미해결", images:[DOG_IMGS[0], DOG_IMGS[1]], desc:"갈색 소형견, 목줄 없음. 편의점 앞에서 배회 중입니다. 간식 줬더니 먹었어요." },
-    { id:2, species:"고양이", breed:"코숏",         location:"수원시 팔달구 화서동", time:"5시간 전",  contact:"010-9876-5432", urgent:false, status:"미해결", images:[CAT_IMGS[0]],               desc:"흰색 고양이, 오른쪽 귀에 상처. 주차장에서 울고 있었어요." },
-    { id:3, species:"강아지", breed:"포메라니안",   location:"수원시 권선구 권선동", time:"어제",      contact:"010-5555-1111", urgent:false, status:"해결됨", images:[DOG_IMGS[2], DOG_IMGS[3]], desc:"아이보리색 포메, 리본 달린 목걸이. 공원 근처에서 봤습니다." },
+    { id:1, species:"강아지", breed:"믹스견",       location:"수원시 영통구 매탄동", time:"2시간 전",  contact:"010-1234-5678", urgent:true,  status:"미해결", images:[dog(0), dog(1)],        desc:"갈색 소형견, 목줄 없음. 편의점 앞에서 배회 중입니다. 간식 줬더니 먹었어요." },
+    { id:2, species:"고양이", breed:"코숏",         location:"수원시 팔달구 화서동", time:"5시간 전",  contact:"010-9876-5432", urgent:false, status:"미해결", images:[cat(0)],                desc:"흰색 고양이, 오른쪽 귀에 상처. 주차장에서 울고 있었어요." },
+    { id:3, species:"강아지", breed:"포메라니안",   location:"수원시 권선구 권선동", time:"어제",      contact:"010-5555-1111", urgent:false, status:"해결됨", images:[dog(2), dog(3)],        desc:"아이보리색 포메, 리본 달린 목걸이. 공원 근처에서 봤습니다." },
   ],
   find: [
-    { id:4, species:"강아지", breed:"골든리트리버", location:"수원시 장안구",         time:"3일 전",   contact:"010-2222-3333", urgent:true,  status:"미해결", images:[DOG_IMGS[1], DOG_IMGS[3]], desc:"이름: 망고. 2살 수컷. 노란 하네스 착용. 2월 20일 오후 2시 실종. 제발 연락주세요 🙏", reward:"사례금 있음" },
-    { id:5, species:"고양이", breed:"러시안블루",   location:"수원시 영통구",         time:"1주일 전", contact:"010-7777-8888", urgent:true,  status:"미해결", images:[CAT_IMGS[1], CAT_IMGS[2]], desc:"이름: 두부. 3살 암컷. 중성화 O. 회색 털, 초록 눈. 실내묘라 매우 위험합니다.",        reward:"없음" },
+    { id:4, species:"강아지", breed:"골든리트리버", location:"수원시 장안구",         time:"3일 전",   contact:"010-2222-3333", urgent:true,  status:"미해결", images:[dog(1), dog(3)],        desc:"이름: 망고. 2살 수컷. 노란 하네스 착용. 2월 20일 오후 2시 실종. 제발 연락주세요 🙏", reward:"사례금 있음" },
+    { id:5, species:"고양이", breed:"러시안블루",   location:"수원시 영통구",         time:"1주일 전", contact:"010-7777-8888", urgent:true,  status:"미해결", images:[cat(1), cat(2)],        desc:"이름: 두부. 3살 암컷. 중성화 O. 회색 털, 초록 눈. 실내묘라 매우 위험합니다.",        reward:"없음" },
   ],
   foster: [
-    { id:6, species:"강아지", breed:"치와와 추정",  location:"수원시 팔달구",         time:"오늘",     contact:"010-3333-4444", urgent:false, status:"모집중", images:[DOG_IMGS[0], DOG_IMGS[2]], desc:"2개월 예정. 건강검진 완료. 밥·모래·패드 제공. 입양 의사 있으신 분도 환영!",           period:"2개월" },
-    { id:7, species:"고양이", breed:"터키시앙고라", location:"서울시 강남구",         time:"2일 전",   contact:"010-6666-9999", urgent:true,  status:"모집중", images:[CAT_IMGS[3], CAT_IMGS[0], CAT_IMGS[2]], desc:"구조된 새끼 고양이 3마리. 약 5주령. 포뮬러 수유 필요. 경험자 우대.",          period:"입양까지" },
+    { id:6, species:"강아지", breed:"치와와 추정",  location:"수원시 팔달구",         time:"오늘",     contact:"010-3333-4444", urgent:false, status:"모집중", images:[dog(0), dog(2)],        desc:"2개월 예정. 건강검진 완료. 밥·모래·패드 제공. 입양 의사 있으신 분도 환영!",           period:"2개월" },
+    { id:7, species:"고양이", breed:"터키시앙고라", location:"서울시 강남구",         time:"2일 전",   contact:"010-6666-9999", urgent:true,  status:"모집중", images:[cat(3), cat(0), cat(2)], desc:"구조된 새끼 고양이 3마리. 약 5주령. 포뮬러 수유 필요. 경험자 우대.",          period:"입양까지" },
   ],
 };
 
@@ -420,7 +425,7 @@ export default function PoPoApp() {
   });
 
   const handleSubmit = (form) => {
-    const fallback = form.species === "강아지" ? [DOG_IMGS[0]] : [CAT_IMGS[0]];
+    const fallback = form.species === "강아지" ? [dog(0)] : [cat(0)];
     setData(d => ({
       ...d,
       [activeTab]: [{
